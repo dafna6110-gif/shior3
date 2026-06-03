@@ -1747,7 +1747,17 @@ stage.addEventListener('click', e => {
   if (e.clientX > window.innerWidth / 2) go(1); else go(-1);
 });
 
-scaleSlideTo(slides[cur]);
+// mobile: wait for layout before scaling
+requestAnimationFrame(() => requestAnimationFrame(() => scaleSlideTo(slides[cur])));
+window.addEventListener('load', () => scaleSlideTo(slides[cur]));
+
+// swipe navigation for mobile
+let _tx = 0;
+stage.addEventListener('touchstart', e => { _tx = e.touches[0].clientX; }, {passive: true});
+stage.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - _tx;
+  if (Math.abs(dx) > 50) { dx < 0 ? go(1) : go(-1); }
+}, {passive: true});
 </script>
 </body>
 </html>
